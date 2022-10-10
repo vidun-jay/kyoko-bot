@@ -2,6 +2,8 @@ import discord
 from discord import SyncWebhook
 from dotenv import load_dotenv
 import os
+import requests
+from bs4 import BeautifulSoup
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
@@ -31,7 +33,18 @@ async def on_message(message):
         if user_message.lower().startswith('!anime'):
             keyword = user_message[7:].replace(" ", "%20") # parse the command out of the message, replace spaces with '%20'
 
-            embed = discord.Embed(title=SentenceCase(user_message[7:]).replace("%20", " "), description=f"https://myanimelist.net/anime.php?q={keyword}&cat=anime", color=0x36509D)
+            # parse MyAnimeList and return top 10 results
+            r = requests.get(f'https://myanimelist.net/anime.php?q={keyword}&cat=anime')
+            soup = BeautifulSoup(r.text, 'html.parser')
+            results = soup.find_all('a', attrs={'class':'hoverinfo_trigger fw-b fl-l'})
+            return_message = ""
+
+            for i in range(10):
+                results[i] = str(results[i].find('strong'))[8:-9]
+                return_message += str(results[i]) + '\n'
+
+
+            embed = discord.Embed(title=f'Results for: {SentenceCase(user_message[7:]).replace("%20", " ")}', description=f"{return_message}", color=0x36509D)
             await message.channel.send(embed=embed)
             return
 
