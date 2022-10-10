@@ -1,6 +1,3 @@
-from datetime import date
-
-
 import discord
 from discord import SyncWebhook
 from dotenv import load_dotenv
