@@ -10,12 +10,10 @@ TOKEN = os.getenv("TOKEN")
 client = discord.Client(intents=discord.Intents.all())
 webhook = os.getenv("WEBHOOK")
 
-
 @client.event
 async def on_ready():
     ''' Sends up message to console '''
     print('Bot started with username: {0.user}'.format(client))
-
 
 @client.event
 async def on_message(message):
@@ -39,20 +37,20 @@ async def on_message(message):
             results = soup.find_all('a', attrs={'class':'hoverinfo_trigger fw-b fl-l'})
             return_message = ""
 
-            for i in range(10):
+            # take the top 5 results from MyAnimeList
+            for i in range(1, 6, 1):
                 results[i] = str(results[i].find('strong'))[8:-9]
-                return_message += str(results[i]) + '\n'
+                return_message += f'{i}. {str(results[i])}\n'
 
+            # send message as embed and set reaction buttons 1-5
+            embed = discord.Embed(title=f'Results for: {user_message[7:].replace("%20", " ")}', description=f"{return_message}", color=0x36509D)
+            msg = await message.channel.send(embed=embed)
+            reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
 
-            embed = discord.Embed(title=f'Results for: {SentenceCase(user_message[7:]).replace("%20", " ")}', description=f"{return_message}", color=0x36509D)
-            await message.channel.send(embed=embed)
+            for reaction in reactions:
+                await msg.add_reaction(reaction)
+
             return
-
-
-def SentenceCase(sentence):
-    ''' Takes in a sentence and then returns it with the first letter of each word capitalized '''
-    return " ".join(word[0].upper()+word[1:] for word in sentence.split(" "))
-
 
 if __name__ == "__main__":
     client.run(TOKEN)
