@@ -2,26 +2,26 @@
 All notable changes to this project will be documented in this file.
 
 ## [1.0.3] - 2022-10-09
-#### Changed
+### Changed
 - `!anime` command returns basic HTML parsing, instead of just URL
 
 
 ## [1.0.2] - 2022-10-08
-#### Changed
+### Changed
 - Uses embed instead of message
 
-#### Added
+### Added
 - `SentenceCase()` method
 
 ## [1.0.1] - 2022-10-08
-#### Changed
+### Changed
 - `!anime` searches specifically for anime instead of all mediums
 - Added docstrings for functions
 - If condition uses channel variable
 
-#### Added
+### Added
 - `CHANGELOG.md`
 
 ## [1.0.0] - 2022-10-08
-#### Added
+### Added
 - Initial release
