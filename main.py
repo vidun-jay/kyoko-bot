@@ -1,5 +1,6 @@
 import discord
 from discord import SyncWebhook
+from discord.utils import get
 from dotenv import load_dotenv
 import os
 import requests
@@ -33,6 +34,27 @@ async def on_message(message):
 
         return
 
+@client.event
+async def on_reaction_add(reaction, user):
+    ''' Returns further information based on selection from list '''
+
+    # if the bot is the one reacting, do nothing
+    if reaction.message.author == user:
+        return
+    else:
+        # expand the reaction, return further details
+        if reaction.emoji == '1️⃣':
+            await reaction.message.channel.send('selected: 1')
+        elif reaction.emoji == '2️⃣':
+            await reaction.message.channel.send('selected: 2')
+        elif reaction.emoji == '3️⃣':
+            await reaction.message.channel.send('selected: 3')
+        elif reaction.emoji == '4️⃣':
+            await reaction.message.channel.send('selected: 4')
+        elif reaction.emoji == '5️⃣':
+            await reaction.message.channel.send('selected: 5')
+    return
+
 async def animeSearch(user_message, message):
     ''' Takes in user message as input and searches MyAnimeList for those keywords '''
     keyword = user_message[7:].replace(" ", "%20") # parse the command out of the message, replace spaces with '%20'
@@ -55,6 +77,8 @@ async def animeSearch(user_message, message):
 
     for reaction in reactions:
         await msg.add_reaction(reaction)
+
+
 
 if __name__ == "__main__":
     client.run(TOKEN)
