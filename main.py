@@ -10,6 +10,7 @@ load_dotenv()
 TOKEN = os.getenv("TOKEN")
 client = discord.Client(intents=discord.Intents.all())
 webhook = os.getenv("WEBHOOK")
+results = []
 
 @client.event
 async def on_ready():
@@ -34,6 +35,31 @@ async def on_message(message):
 
         return
 
+async def animeSearch(user_message, message):
+    ''' Takes in user message as input and searches MyAnimeList for those keywords '''
+    global results
+    keyword = user_message[7:].replace(" ", "%20") # parse the command out of the message, replace spaces with '%20'
+
+    # parse MyAnimeList and return top 10 results
+    r = requests.get(f'https://myanimelist.net/anime.php?q={keyword}&cat=anime')
+    soup = BeautifulSoup(r.text, 'html.parser')
+    results = soup.find_all('a', attrs={'class':'hoverinfo_trigger fw-b fl-l'})
+    return_message = ""
+
+    # take the top 5 results from MyAnimeList
+    for i in range(0, 5, 1):
+        results[i] = str(results[i].find('strong'))[8:-9]
+        # results.append(str(results[i].find('strong'))[8:-9])
+        return_message += f'{i + 1}. {str(results[i])}\n'
+
+    # send message as embed and set reaction buttons 1-5
+    embed = discord.Embed(title=f'Results for: {user_message[7:].replace("%20", " ")}', description=f"{return_message}", color=0x36509D)
+    msg = await message.channel.send(embed=embed)
+    reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+
+    for reaction in reactions:
+        await msg.add_reaction(reaction)
+
 @client.event
 async def on_reaction_add(reaction, user):
     ''' Returns further information based on selection from list '''
@@ -44,41 +70,18 @@ async def on_reaction_add(reaction, user):
     else:
         # expand the reaction, return further details
         if reaction.emoji == '1️⃣':
-            await reaction.message.channel.send('selected: 1')
+            # await reaction.message.channel.send('selected: 1')
+            embed = discord.Embed(title=f'{results[0]}', description=f"description", color=0x36509D)
+            await reaction.message.channel.send(embed=embed)
         elif reaction.emoji == '2️⃣':
-            await reaction.message.channel.send('selected: 2')
+            embed = discord.Embed(title=f'{results[1]}', description=f"description", color=0x36509D)
         elif reaction.emoji == '3️⃣':
-            await reaction.message.channel.send('selected: 3')
+            embed = discord.Embed(title=f'{results[2]}', description=f"description", color=0x36509D)
         elif reaction.emoji == '4️⃣':
-            await reaction.message.channel.send('selected: 4')
+            embed = discord.Embed(title=f'{results[3]}', description=f"description", color=0x36509D)
         elif reaction.emoji == '5️⃣':
-            await reaction.message.channel.send('selected: 5')
+            embed = discord.Embed(title=f'{results[4]}', description=f"description", color=0x36509D)
     return
-
-async def animeSearch(user_message, message):
-    ''' Takes in user message as input and searches MyAnimeList for those keywords '''
-    keyword = user_message[7:].replace(" ", "%20") # parse the command out of the message, replace spaces with '%20'
-
-    # parse MyAnimeList and return top 10 results
-    r = requests.get(f'https://myanimelist.net/anime.php?q={keyword}&cat=anime')
-    soup = BeautifulSoup(r.text, 'html.parser')
-    results = soup.find_all('a', attrs={'class':'hoverinfo_trigger fw-b fl-l'})
-    return_message = ""
-
-    # take the top 5 results from MyAnimeList
-    for i in range(1, 6, 1):
-        results[i] = str(results[i].find('strong'))[8:-9]
-        return_message += f'{i}. {str(results[i])}\n'
-
-    # send message as embed and set reaction buttons 1-5
-    embed = discord.Embed(title=f'Results for: {user_message[7:].replace("%20", " ")}', description=f"{return_message}", color=0x36509D)
-    msg = await message.channel.send(embed=embed)
-    reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
-
-    for reaction in reactions:
-        await msg.add_reaction(reaction)
-
-
 
 if __name__ == "__main__":
     client.run(TOKEN)

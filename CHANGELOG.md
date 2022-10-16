@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.6] - 2022-10-10
+### Changed
+- Bug displayed results starting from the second result instead of top result
+- Needed to make some variables global, working on a way around this
+
 ## [1.0.5] - 2022-10-10
 ### Changed
 - `animeSearch` is now it's own function to make code a bit more modular
