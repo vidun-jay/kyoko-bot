@@ -1,6 +1,21 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.5] - 2022-10-10
+### Changed
+- `animeSearch` is now it's own function to make code a bit more modular
+
+## [1.0.4] - 2022-10-09
+### Added
+- Numbering for results
+- Reactions
+
+### Changed
+- Returns top 5 results instead of 10
+
+### Removed
+- `sentenceCase()` function (useless)
+
 ## [1.0.3] - 2022-10-09
 ### Changed
 - `!anime` command returns basic HTML parsing, instead of just URL
