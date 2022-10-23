@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.6] - 2022-10-23
+### Added
+- Displays description upon reaction (granted not the right one, but hey it's something)
+- `get_url()` function
+- `get_description` function
+
 ## [1.0.6] - 2022-10-10
 ### Changed
 - Bug displayed results starting from the second result instead of top result

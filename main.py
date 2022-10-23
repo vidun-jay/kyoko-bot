@@ -1,3 +1,4 @@
+from ast import keyword
 import discord
 from discord import SyncWebhook
 from discord.utils import get
@@ -8,9 +9,10 @@ from bs4 import BeautifulSoup
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
-client = discord.Client(intents=discord.Intents.all())
 webhook = os.getenv("WEBHOOK")
+client = discord.Client(intents=discord.Intents.all())
 results = []
+keyword = ""
 
 @client.event
 async def on_ready():
@@ -21,10 +23,10 @@ async def on_ready():
 async def on_message(message):
     ''' Listens for message event and reads command '''
 
-    username = str(message.author).split('#')[0] # gets username of message author
     user_message = str(message.content) # gets content of message
     channel = str(message.channel.name) # gets name of current channel
 
+    # only read human messages
     if message.author == client.user:
         return
 
@@ -38,6 +40,7 @@ async def on_message(message):
 async def animeSearch(user_message, message):
     ''' Takes in user message as input and searches MyAnimeList for those keywords '''
     global results
+    global keyword
     keyword = user_message[7:].replace(" ", "%20") # parse the command out of the message, replace spaces with '%20'
 
     # parse MyAnimeList and return top 10 results
@@ -49,20 +52,40 @@ async def animeSearch(user_message, message):
     # take the top 5 results from MyAnimeList
     for i in range(0, 5, 1):
         results[i] = str(results[i].find('strong'))[8:-9]
-        # results.append(str(results[i].find('strong'))[8:-9])
         return_message += f'{i + 1}. {str(results[i])}\n'
 
     # send message as embed and set reaction buttons 1-5
-    embed = discord.Embed(title=f'Results for: {user_message[7:].replace("%20", " ")}', description=f"{return_message}", color=0x36509D)
+    embed = discord.Embed(title=f'Results for: {keyword.replace("%20", " ")}', description=f"{return_message}", color=0x36509D)
     msg = await message.channel.send(embed=embed)
     reactions = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
 
     for reaction in reactions:
         await msg.add_reaction(reaction)
 
+def get_url(keyword):
+    ''' Takes in a keyword and returns the url from that keyword '''
+    r = requests.get(f'https://myanimelist.net/anime.php?q={keyword}&cat=anime')
+    soup = BeautifulSoup(r.text, 'html.parser')
+    links = soup.find_all('a')
+
+    return links[93].get('href')
+
+def get_description(url):
+    r = requests.get('https://myanimelist.net/anime/459/One_Piece_Movie_01')
+    soup = BeautifulSoup(r.text, 'html.parser')
+    description_html = soup.find_all('p', attrs={'itemprop':'description'})
+
+    description = str(description_html)[27:-5].replace('<br>', '\n').replace('<br/>', '')
+
+    return description
+
 @client.event
 async def on_reaction_add(reaction, user):
     ''' Returns further information based on selection from list '''
+    global keyword
+    global results
+    url = get_url(keyword)
+    description = get_description(url)
 
     # if the bot is the one reacting, do nothing
     if reaction.message.author == user:
@@ -70,17 +93,20 @@ async def on_reaction_add(reaction, user):
     else:
         # expand the reaction, return further details
         if reaction.emoji == '1️⃣':
-            # await reaction.message.channel.send('selected: 1')
-            embed = discord.Embed(title=f'{results[0]}', description=f"description", color=0x36509D)
+            embed = discord.Embed(title=f'{results[0]}', description=description, color=0x36509D)
             await reaction.message.channel.send(embed=embed)
         elif reaction.emoji == '2️⃣':
-            embed = discord.Embed(title=f'{results[1]}', description=f"description", color=0x36509D)
+            embed = discord.Embed(title=f'{results[1]}', description=description, color=0x36509D)
+            await reaction.message.channel.send(embed=embed)
         elif reaction.emoji == '3️⃣':
-            embed = discord.Embed(title=f'{results[2]}', description=f"description", color=0x36509D)
+            embed = discord.Embed(title=f'{results[2]}', description=description, color=0x36509D)
+            await reaction.message.channel.send(embed=embed)
         elif reaction.emoji == '4️⃣':
-            embed = discord.Embed(title=f'{results[3]}', description=f"description", color=0x36509D)
+            embed = discord.Embed(title=f'{results[3]}', description=description, color=0x36509D)
+            await reaction.message.channel.send(embed=embed)
         elif reaction.emoji == '5️⃣':
-            embed = discord.Embed(title=f'{results[4]}', description=f"description", color=0x36509D)
+            embed = discord.Embed(title=f'{results[4]}', description=description, color=0x36509D)
+            await reaction.message.channel.send(embed=embed)
     return
 
 if __name__ == "__main__":
