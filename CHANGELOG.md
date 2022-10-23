@@ -1,7 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-## [1.0.6] - 2022-10-23
+## [1.0.8] - 2022-10-23
+### Changed
+- Fixed the description thing - reacting to the message now shows the corresponding description
+
+## [1.0.7] - 2022-10-22
 ### Added
 - Displays description upon reaction (granted not the right one, but hey it's something)
 - `get_url()` function

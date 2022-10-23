@@ -62,16 +62,22 @@ async def animeSearch(user_message, message):
     for reaction in reactions:
         await msg.add_reaction(reaction)
 
-def get_url(keyword):
-    ''' Takes in a keyword and returns the url from that keyword '''
+def get_url(keyword, position):
+    ''' Takes in a keyword and a position, and returns the URL of the search result at that position '''
+
+    # the index of the first search result in the array of links on the page is 93
+    # there are 4 miscellaneous links between results, so for the next position, go 5 links down
+    index = 93 + (5 * position)
+
     r = requests.get(f'https://myanimelist.net/anime.php?q={keyword}&cat=anime')
     soup = BeautifulSoup(r.text, 'html.parser')
     links = soup.find_all('a')
 
-    return links[93].get('href')
+    return links[index].get('href')
 
 def get_description(url):
-    r = requests.get('https://myanimelist.net/anime/459/One_Piece_Movie_01')
+    ''' Get's the description from a URL of a specific anime '''
+    r = requests.get(url)
     soup = BeautifulSoup(r.text, 'html.parser')
     description_html = soup.find_all('p', attrs={'itemprop':'description'})
 
@@ -84,27 +90,35 @@ async def on_reaction_add(reaction, user):
     ''' Returns further information based on selection from list '''
     global keyword
     global results
-    url = get_url(keyword)
-    description = get_description(url)
 
     # if the bot is the one reacting, do nothing
     if reaction.message.author == user:
         return
     else:
-        # expand the reaction, return further details
+        # send the selected name and corresponding description of the selected search result
         if reaction.emoji == '1️⃣':
+            url = get_url(keyword, 0)
+            description = get_description(url)
             embed = discord.Embed(title=f'{results[0]}', description=description, color=0x36509D)
             await reaction.message.channel.send(embed=embed)
         elif reaction.emoji == '2️⃣':
+            url = get_url(keyword, 1)
+            description = get_description(url)
             embed = discord.Embed(title=f'{results[1]}', description=description, color=0x36509D)
             await reaction.message.channel.send(embed=embed)
         elif reaction.emoji == '3️⃣':
+            url = get_url(keyword, 2)
+            description = get_description(url)
             embed = discord.Embed(title=f'{results[2]}', description=description, color=0x36509D)
             await reaction.message.channel.send(embed=embed)
         elif reaction.emoji == '4️⃣':
+            url = get_url(keyword, 3)
+            description = get_description(url)
             embed = discord.Embed(title=f'{results[3]}', description=description, color=0x36509D)
             await reaction.message.channel.send(embed=embed)
         elif reaction.emoji == '5️⃣':
+            url = get_url(keyword, 4)
+            description = get_description(url)
             embed = discord.Embed(title=f'{results[4]}', description=description, color=0x36509D)
             await reaction.message.channel.send(embed=embed)
     return
