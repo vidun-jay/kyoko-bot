@@ -1,4 +1,3 @@
-from ast import keyword
 import discord
 from discord import SyncWebhook
 from discord.utils import get
@@ -56,7 +55,6 @@ async def animeSearch(user_message, message):
         user_message (string): CONTENT of the message
         message (message): message OBJECT
     """
-    ''' Takes in user message as input and searches MyAnimeList for those keywords '''
     global results
     global keyword
     keyword = user_message[7:].replace(" ", "%20") # parse the command out of the message, replace spaces with '%20'
