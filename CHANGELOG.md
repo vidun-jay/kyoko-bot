@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] 2022-12-26
+### Added
+- Anime search now also shows image
+
 ## [1.0.9] 2022-12-26
 ### Changed
 - Fixed off-by-one search error on line 70

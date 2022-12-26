@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import requests
 from bs4 import BeautifulSoup
+from urlextract import URLExtract
 
 # loading in token and webhook from .env
 load_dotenv()
@@ -79,7 +80,7 @@ async def animeSearch(user_message, message):
     for reaction in reactions:
         await msg.add_reaction(reaction)
 
-def get_url(keyword, position):
+def getUrl(keyword, position):
     """Takes in a keyword and a position, and returns the URL of the search result at that position
 
     Args:
@@ -100,7 +101,7 @@ def get_url(keyword, position):
 
     return links[index].get('href')
 
-def get_description(url):
+def getDescription(url):
     """Gets the description from a URL of a specific anime
 
     Args:
@@ -116,6 +117,24 @@ def get_description(url):
     description = str(description_html)[27:-5].replace('<br>', '\n').replace('<br/>', '')
 
     return description
+
+def getImage(url):
+    """Returns the URL for the cover image of an anime
+
+    Args:
+        url (string): URL to take image from
+
+    Returns:
+        string: image URL to the .jpg cover image
+    """
+    r = requests.get(url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    image_html = soup.find_all(attrs={'itemprop':'image'})
+
+    extractor = URLExtract()
+    image = extractor.find_urls(str(image_html[0]))
+
+    return image[0]
 
 @client.event
 async def on_reaction_add(reaction, user):
@@ -137,9 +156,10 @@ async def on_reaction_add(reaction, user):
         # send the selected name and corresponding description of the selected search result
         if reaction.emoji == '1️⃣':
             await reaction.remove(user)
-            url = get_url(keyword, 0)
-            description = get_description(url)
+            url = getUrl(keyword, 0)
+            description = getDescription(url)
             embed = discord.Embed(title=f'{results[0]}', url=url, description=description, color=0x36509D)
+            embed.set_thumbnail(url=getImage(url))
             if first_reaction:
                 send = await reaction.message.channel.send(embed=embed)
                 first_reaction = False
@@ -147,9 +167,10 @@ async def on_reaction_add(reaction, user):
                 await send.edit(embed=embed)
         elif reaction.emoji == '2️⃣':
             await reaction.remove(user)
-            url = get_url(keyword, 1)
-            description = get_description(url)
+            url = getUrl(keyword, 1)
+            description = getDescription(url)
             embed = discord.Embed(title=f'{results[1]}', url=url, description=description, color=0x36509D)
+            embed.set_thumbnail(url=getImage(url))
             if first_reaction:
                 send = await reaction.message.channel.send(embed=embed)
                 first_reaction = False
@@ -157,9 +178,10 @@ async def on_reaction_add(reaction, user):
                 await send.edit(embed=embed)
         elif reaction.emoji == '3️⃣':
             await reaction.remove(user)
-            url = get_url(keyword, 2)
-            description = get_description(url)
+            url = getUrl(keyword, 2)
+            description = getDescription(url)
             embed = discord.Embed(title=f'{results[2]}', url=url, description=description, color=0x36509D)
+            embed.set_thumbnail(url=getImage(url))
             if first_reaction:
                 send = await reaction.message.channel.send(embed=embed)
                 first_reaction = False
@@ -167,9 +189,10 @@ async def on_reaction_add(reaction, user):
                 await send.edit(embed=embed)
         elif reaction.emoji == '4️⃣':
             await reaction.remove(user)
-            url = get_url(keyword, 3)
-            description = get_description(url)
+            url = getUrl(keyword, 3)
+            description = getDescription(url)
             embed = discord.Embed(title=f'{results[3]}', url=url, description=description, color=0x36509D)
+            embed.set_thumbnail(url=getImage(url))
             if first_reaction:
                 send = await reaction.message.channel.send(embed=embed)
                 first_reaction = False
@@ -177,9 +200,10 @@ async def on_reaction_add(reaction, user):
                 await send.edit(embed=embed)
         elif reaction.emoji == '5️⃣':
             await reaction.remove(user)
-            url = get_url(keyword, 4)
-            description = get_description(url)
+            url = getUrl(keyword, 4)
+            description = getDescription(url)
             embed = discord.Embed(title=f'{results[4]}', url=url, description=description, color=0x36509D)
+            embed.set_thumbnail(url=getImage(url))
             if first_reaction:
                 send = await reaction.message.channel.send(embed=embed)
                 first_reaction = False
