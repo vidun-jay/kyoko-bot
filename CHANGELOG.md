@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.0.9] 2022-12-26
+### Changed
+- Fixed off-by-one search error on line 70
+- Made docstrings more readable
+
+### Added
+- New selection edits message instead of sending new one
+- Reacting to message now unreacts immediately (for aesthetics)
+
 ## [1.0.8] - 2022-10-23
 ### Changed
 - Fixed the description thing - reacting to the message now shows the corresponding description
