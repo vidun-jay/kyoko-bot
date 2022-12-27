@@ -39,15 +39,13 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    # only respond in current channel
-    if channel == 'general':
-        # if the message starts with "!anime", it's a command
-        if user_message.lower().startswith('!anime'):
-            # every new command, send a new embed (see on_reaction_add method)
-            first_reaction = True
-            await animeSearch(user_message, message)
+    # if the message starts with "!anime", it's a command
+    if user_message.lower().startswith('!anime'):
+        # every new command, send a new embed (see on_reaction_add method)
+        first_reaction = True
+        await animeSearch(user_message, message)
 
-        return
+    return
 
 async def animeSearch(user_message, message):
     """Takes in user message as input and searches MyAnimeList for those keywords
