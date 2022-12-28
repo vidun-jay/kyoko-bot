@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] 2022-12-28
+### Added
+- `!profile` command
+- Returns anime stats properly, still need to add manga stats
+
+### Changed
+- Created separate `AnimeSearch.py` and `ProfileSearch.py` files for their respective functions to clean up `main` a little bit
+
 ## [1.1.0] 2022-12-26
 ### Added
 - Anime search now also shows image

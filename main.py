@@ -7,6 +7,9 @@ import requests
 from bs4 import BeautifulSoup
 from urlextract import URLExtract
 
+from ProfileSearch import *
+from AnimeSearch import *
+
 # loading in token and webhook from .env
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
@@ -92,88 +95,18 @@ async def profileSearch(user_message, message):
     r = requests.get(profile_url)
     soup = BeautifulSoup(r.text, 'html.parser')
 
-    embed = discord.Embed(title="MyAnimeList Profile", url=profile_url)
-    embed.set_author(name=profile_name)
-    embed.add_field(name="Anime Stats:", value=f"Days watched: {getDays(profile_url, 0)}\nEpisodes: \nWatching: \n Completed: ", inline=True)
+    # if the request returns a error 404 (profile not found)
+    if r.ok:
+        embed = discord.Embed(title="MyAnimeList Profile", url=profile_url, color=0x00DBFF)
+        embed.set_author(name=profile_name)
+        embed.set_thumbnail(url=getProfilePicture(profile_url))
+        embed.add_field(name="Anime Stats:", value=f"Days watched: {getDays(profile_url, 0)}\nEpisodes: {getEpisodes(profile_url)}\nWatching: {getWatching(profile_url)}\n Completed: {getCompleted(profile_url)}", inline=True)
+        embed.add_field(name="Manga Stats:", value=f"Days read: {getDays(profile_url, 1)}\nChapters: \nReading: \n Completed: ", inline=True)
+    else:
+        embed = discord.Embed(title="Profile not found. ", description="Please enter a valid profile name.", color=0xFF0000)
+        embed.set_thumbnail(url='https://64.media.tumblr.com/1e8b63b8e33978d7d5ef5019f32c5930/aebf5a6e89fb27e4-db/s400x600/37381ac3b8ae4be3df56bf18d20fcebf0fc00aa0.png')
+
     await message.channel.send(embed=embed)
-
-def getUrl(keyword, position):
-    """Takes in a keyword and a position, and returns the URL of the search result at that position
-
-    Args:
-        keyword (string): keyword to search
-        position (int): position of which to return url of (top result, second result, etc.)
-
-    Returns:
-        string: URL of the search result at position "position"
-    """
-
-    # the index of the first search result in the array of links on the page is 93
-    # there are 4 miscellaneous links between results, so for the next position, go 5 links down
-    index = 92 + (5 * position)
-
-    r = requests.get(f'https://myanimelist.net/anime.php?q={keyword}&cat=anime')
-    soup = BeautifulSoup(r.text, 'html.parser')
-    links = soup.find_all('a')
-
-    return links[index].get('href')
-
-def getDays(profile_url, index):
-    """Returns an array of days of anime watched and days of manga read
-
-    Args:
-        profile_url (string): url of the profile to search
-        index (int): whether to return anime or manga days
-
-    Returns:
-        list: list of the days, days[0] = anime days watched, days[1] = days of manga read
-    """
-
-    r = requests.get(profile_url)
-    soup = BeautifulSoup(r.text, 'html.parser')
-    beginning = '<div class="di-tc al pl8 fs12 fw-b"><span class="fn-grey2 fw-n">Days: </span>'
-    end = '</div>'
-    days = soup.find_all("div", {"class": "di-tc al pl8 fs12 fw-b"})
-
-    days[0] = str(days[0]).replace(beginning, "").replace(end, "")
-    days[1] = str(days[1]).replace(beginning, "").replace(end, "")
-
-    return days[index]
-
-def getDescription(url):
-    """Gets the description from a URL of a specific anime
-
-    Args:
-        url (string): URL to get description from
-
-    Returns:
-        string: the description field from URL input
-    """
-    r = requests.get(url)
-    soup = BeautifulSoup(r.text, 'html.parser')
-    description_html = soup.find_all('p', attrs={'itemprop':'description'})
-
-    description = str(description_html)[27:-5].replace('<br>', '\n').replace('<br/>', '')
-
-    return description
-
-def getImage(url):
-    """Returns the URL for the cover image of an anime
-
-    Args:
-        url (string): URL to take image from
-
-    Returns:
-        string: image URL to the .jpg cover image
-    """
-    r = requests.get(url)
-    soup = BeautifulSoup(r.text, 'html.parser')
-    image_html = soup.find_all(attrs={'itemprop':'image'})
-
-    extractor = URLExtract()
-    image = extractor.find_urls(str(image_html[0]))
-
-    return image[0]
 
 @client.event
 async def on_reaction_add(reaction, user):
