@@ -33,7 +33,6 @@ async def on_message(message):
     global first_reaction
 
     user_message = str(message.content) # gets content of message
-    channel = str(message.channel.name) # gets name of current channel
 
     # only read human messages
     if message.author == client.user:
