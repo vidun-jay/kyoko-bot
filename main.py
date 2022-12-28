@@ -38,12 +38,14 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    # if the message starts with "!anime", it's a command
+    # !anime command
     if user_message.lower().startswith('!anime'):
         # every new command, send a new embed (see on_reaction_add method)
         first_reaction = True
         await animeSearch(user_message, message)
 
+    if user_message.lower().startswith('!profile'):
+        await profileSearch(user_message, message)
     return
 
 async def animeSearch(user_message, message):
@@ -77,6 +79,24 @@ async def animeSearch(user_message, message):
     for reaction in reactions:
         await msg.add_reaction(reaction)
 
+async def profileSearch(user_message, message):
+    """Searches for an MAL profile and returns its stats
+
+    Args:
+        user_message (string): the message from the user command containing the profile to search for
+        message (string): message object
+    """
+    # parse the "!profile " part out
+    profile_name = user_message[9:]
+    profile_url = f'https://myanimelist.net/profile/{profile_name}'
+    r = requests.get(profile_url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+
+    embed = discord.Embed(title="MyAnimeList Profile", url=profile_url)
+    embed.set_author(name=profile_name)
+    embed.add_field(name="Anime Stats:", value=f"Days watched: {getDays(profile_url, 0)}\nEpisodes: \nWatching: \n Completed: ", inline=True)
+    await message.channel.send(embed=embed)
+
 def getUrl(keyword, position):
     """Takes in a keyword and a position, and returns the URL of the search result at that position
 
@@ -97,6 +117,28 @@ def getUrl(keyword, position):
     links = soup.find_all('a')
 
     return links[index].get('href')
+
+def getDays(profile_url, index):
+    """Returns an array of days of anime watched and days of manga read
+
+    Args:
+        profile_url (string): url of the profile to search
+        index (int): whether to return anime or manga days
+
+    Returns:
+        list: list of the days, days[0] = anime days watched, days[1] = days of manga read
+    """
+
+    r = requests.get(profile_url)
+    soup = BeautifulSoup(r.text, 'html.parser')
+    beginning = '<div class="di-tc al pl8 fs12 fw-b"><span class="fn-grey2 fw-n">Days: </span>'
+    end = '</div>'
+    days = soup.find_all("div", {"class": "di-tc al pl8 fs12 fw-b"})
+
+    days[0] = str(days[0]).replace(beginning, "").replace(end, "")
+    days[1] = str(days[1]).replace(beginning, "").replace(end, "")
+
+    return days[index]
 
 def getDescription(url):
     """Gets the description from a URL of a specific anime
