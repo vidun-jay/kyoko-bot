@@ -1,0 +1,19 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+markdownify = "*"
+discord = "*"
+python-dotenv = "*"
+requests = "*"
+bs4 = "*"
+urlextract = "*"
+lock = "*"
+"setup.py" = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
