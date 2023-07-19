@@ -18,15 +18,9 @@ jobs:
       # Install dependencies and build
       - name: Install Dependencies and Build
         run: |
-          pwd && cd /home/ec2-user/Kyoko-Bot && pip install -r requirements.txt
+          pwd && whoami && cd /home/ec2-user/Kyoko-Bot && pip install -r requirements.txt
 
       # Transfer files to EC2 instance
       - name: Transfer Files to EC2
         run: |
-          scp -r -i ${{ secrets.EC2_SSH_PRIVATE_KEY }} . ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/Kyoko-Bot
-
-      # SSH into the EC2 instance and update the repository
-      - name: SSH into EC2 and Update Repository
-        run: |
-          ssh -i ${{ secrets.EC2_SSH_PRIVATE_KEY }} ec2-user@${{ secrets.EC2_PUBLIC_IP }} 'cd /home/ec2-user/Kyoko-Bot && git pull'
-
+          cp -r /home/runner/work/Kyoko-Bot/Kyoko-Bot /home/ec2-user/Kyoko-Bot
