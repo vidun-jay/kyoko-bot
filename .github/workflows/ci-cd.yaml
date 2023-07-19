@@ -23,7 +23,7 @@ jobs:
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          scp -r -i ~/.ssh/id_rsa * ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/Kyoko-Bot
+          scp -r * ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/Kyoko-Bot
 
       # Close old bot
       - name: Close old bot
