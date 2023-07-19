@@ -15,16 +15,10 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      # Set up SSH for EC2 access
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.5.1
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
-
-      # Install dependencies and build (replace this with your build commands)
+      # Install dependencies and build
       - name: Install Dependencies and Build
         run: |
-          pip install -r requirements.txt
+          pwd && cd /home/ec2-user/Kyoko-Bot && pip install -r requirements.txt
 
       # Transfer files to EC2 instance
       - name: Transfer Files to EC2
