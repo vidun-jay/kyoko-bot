@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - master
+      - 15-create-cicd-pipeline-for-ec2
 
 jobs:
   deploy:
