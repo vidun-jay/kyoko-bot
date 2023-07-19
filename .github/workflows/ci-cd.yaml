@@ -15,11 +15,13 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v2
 
-      # Set up SSH for EC2 access
-      # - name: Set up SSH
-      #   uses: webfactory/ssh-agent@v0.5.1
-      #   with:
-      #     ssh-private-key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+      - name: Setup SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$EC2_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       # Install dependencies and build
       - name: Install Dependencies and Build
@@ -28,7 +30,7 @@ jobs:
       # Transfer files to EC2 instance
       - name: Transfer Files to EC2
         run: |
-          cat .ssh/id_rsa.pub && scp -r . ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/Kyoko-Bot
+          scp -r . ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/Kyoko-Bot
       # SSH into the EC2 instance and update the repository
       - name: SSH into EC2 and Update Repository
         run: |
