@@ -33,4 +33,4 @@ jobs:
         env:
           EC2_SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
         run: |
-          scp -r . ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/Kyoko-Bot
+          scp -r -i ~/.ssh/id_rsa . ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/Kyoko-Bot
