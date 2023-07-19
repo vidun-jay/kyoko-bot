@@ -26,12 +26,11 @@ jobs:
           echo "$RUNNER_HOST" >> ~/.ssh/known_hosts
           chmod 600 ~/.ssh/id_rsa
           scp -r * ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/Kyoko-Bot
-          ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} "screen -X -S kyoko quit"
 
       # Close old bot
-      - name: Close old bot
-        run: |
-          ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} "screen -X -S kyoko quit"
+      # - name: Close old bot
+      #   run: |
+      #     ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} "screen -X -S kyoko quit"
 
       # Install dependencies and build
       - name: Install Dependencies and Build
@@ -41,5 +40,5 @@ jobs:
       # Run new code
       - name: Run new code
         run: |
-          ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} "screen -S kyoko -d -m"
+          ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} "screen -X -S kyoko quit && screen -S kyoko -d -m"
           ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} "screen -dmS kyoko python3 Kyoko-Bot/main.py"
