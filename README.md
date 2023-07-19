@@ -5,4 +5,6 @@ Simple Anime Bot for Discord to search for and watch anime.
 
 ## Commands
 - `!anime <name>`: searches MyAnimeList for a certain anime and returns top 9 results. Select a result to learn more about the anime.
+- `!manga <name>` : searches MyAnimeList for a certain manga nad returns top 9 results. Select a result to learn more about the manga. 
 - `!profile <profile name>`: searches for a MyAnimeList user and returns their stats
+

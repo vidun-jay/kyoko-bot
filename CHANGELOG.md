@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] 2023-07-18
+### Added
+- Added `!manga` command  
+
 ## [1.1.1] 2022-12-28
 ### Added
 - `!profile` command
