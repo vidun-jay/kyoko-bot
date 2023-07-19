@@ -6,6 +6,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from urlextract import URLExtract
+from markdownify import markdownify as md
 
 """
 This file contains all the functions needed to get the elements
@@ -46,9 +47,9 @@ def getDescription(url):
     soup = BeautifulSoup(r.text, 'html.parser')
     description_html = soup.find_all('p', attrs={'itemprop':'description'})
 
-    description = str(description_html)[27:-5].replace('<br>', '\n').replace('<br/>', '')
+    description = str(description_html)[27:-5].replace('<br>', '').replace('</br>', '').replace('<br/>', '')
 
-    return description
+    return md(description)
 
 def getImage(url):
     """Returns the URL for the cover image of an anime
