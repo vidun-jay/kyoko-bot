@@ -40,5 +40,4 @@ jobs:
       # Run new code
       - name: Run new code
         run: |
-          screen -S kyoko
-          python3 main.py
+          screen -S kyoko -X stuff 'python3 main.py\n'
