@@ -181,7 +181,6 @@ async def on_reaction_add(reaction, user):
             
             if isMangaSearch:
                 url = getMangaUrl(keyword, index)
-                print(url)
                 description = getMangaDescription(url)
                 isMangaSearch = False
             elif isAnimeSearch:

@@ -32,7 +32,6 @@ def getMangaUrl(keyword, position):
     soup = BeautifulSoup(r.text, 'html.parser')
     links = soup.find_all('a')
 
-    print(links[index].get('href'))
     return links[index].get('href')
 
 def getMangaDescription(url):
