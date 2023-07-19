@@ -35,8 +35,7 @@ jobs:
       # Install dependencies and build
       - name: Install Dependencies and Build
         run: |
-          ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} "cd Kyoko-Bot"
-          ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} "pip install -r requirements.txt"
+          pip install -r requirements.txt
 
       # Run new code
       - name: Run new code
