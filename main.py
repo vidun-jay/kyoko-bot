@@ -21,8 +21,9 @@ client = discord.Client(intents=discord.Intents.all())
 results = []
 keyword = ""
 first_reaction = True
-isAnimeSearch = True
-isMangaSearch = True
+isMangaSearch = False
+isAnimeSearch = False
+
 
 @client.event
 async def on_ready():
@@ -38,8 +39,8 @@ async def on_message(message):
     """
     global first_reaction
     global isMangaSearch
-    global isAnimeSearch
-
+    global isAnimeSearch 
+    
     user_message = str(message.content) # gets content of message
 
     # only read human messages
@@ -175,23 +176,21 @@ async def on_reaction_add(reaction, user):
         # send the selected name and corresponding description of the selected search result
         if reaction.emoji in emoji_mapping:
             #checks to see if the search is for a Anime or Manga 
+            await reaction.remove(user)
+            index = emoji_mapping[reaction.emoji]
+            
             if isMangaSearch:
-                await reaction.remove(user)
-                index = emoji_mapping[reaction.emoji]
                 url = getMangaUrl(keyword, index)
                 print(url)
                 description = getMangaDescription(url)
-                embed = discord.Embed(title=f'{results[index]}', url=url, description=description, color=0x36509D)
-                embed.set_thumbnail(url=getMangaImage(url))
                 isMangaSearch = False
             elif isAnimeSearch:
-                await reaction.remove(user)
-                index = emoji_mapping[reaction.emoji]
                 url = getUrl(keyword, index)
                 description = getDescription(url)
-                embed = discord.Embed(title=f'{results[index]}', url=url, description=description, color=0x36509D)
-                embed.set_thumbnail(url=getImage(url))
                 isAnimeSearch = False
+                
+            embed = discord.Embed(title=f'{results[index]}', url=url, description=description, color=0x36509D)
+            embed.set_thumbnail(url=getImage(url))
                 
             if first_reaction:
                 send = await reaction.message.channel.send(embed=embed)
