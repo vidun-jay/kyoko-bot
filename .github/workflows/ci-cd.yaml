@@ -30,7 +30,6 @@ jobs:
       # Close old bot
       - name: Close old bot
         run: |
-          screen -r kyoko
           screen -X -S kyoko quit
 
       # Install dependencies and build
