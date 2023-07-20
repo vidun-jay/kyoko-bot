@@ -9,7 +9,7 @@ from urlextract import URLExtract
 
 from ProfileSearch import *
 from AnimeSearch import *
-from MangaSearch import * 
+from MangaSearch import *
 
 # loading in token and webhook from .env
 load_dotenv()
@@ -39,8 +39,8 @@ async def on_message(message):
     """
     global first_reaction
     global isMangaSearch
-    global isAnimeSearch 
-    
+    global isAnimeSearch
+
     user_message = str(message.content) # gets content of message
 
     # only read human messages
@@ -56,12 +56,12 @@ async def on_message(message):
 
     if user_message.lower().startswith('!profile'):
         await profileSearch(user_message, message)
-        
+
     if user_message.lower().startswith('!manga'):
         first_reaction = True
         isMangaSearch = True
         await mangaSearch(user_message, message)
-    
+
     return
 
 async def animeSearch(user_message, message):
@@ -94,9 +94,9 @@ async def animeSearch(user_message, message):
     # add reactions
     for reaction in reactions:
         await msg.add_reaction(reaction)
-        
+
 async def mangaSearch(user_message, message):
-    """Takes in user message as input and searches MyAnimeList for those keywords in mangaSearch 
+    """Takes in user message as input and searches MyAnimeList for those keywords in mangaSearch
 
     Args:
         user_message (string): CONTENT of the message
@@ -125,7 +125,7 @@ async def mangaSearch(user_message, message):
     # add reactions
     for reaction in reactions:
         await msg.add_reaction(reaction)
-        
+
 
 async def profileSearch(user_message, message):
     """Searches for an MAL profile and returns its stats
@@ -175,10 +175,10 @@ async def on_reaction_add(reaction, user):
         emoji_mapping = {'1️⃣': 0, '2️⃣': 1, '3️⃣': 2, '4️⃣': 3, '5️⃣': 4, '6️⃣':5, '7️⃣':6, '8️⃣':7, '9️⃣':8}
         # send the selected name and corresponding description of the selected search result
         if reaction.emoji in emoji_mapping:
-            #checks to see if the search is for a Anime or Manga 
+            #checks to see if the search is for a Anime or Manga
             await reaction.remove(user)
             index = emoji_mapping[reaction.emoji]
-            
+
             if isMangaSearch:
                 url = getMangaUrl(keyword, index)
                 description = getMangaDescription(url)
@@ -187,16 +187,16 @@ async def on_reaction_add(reaction, user):
                 url = getUrl(keyword, index)
                 description = getDescription(url)
                 isAnimeSearch = False
-                
+
             embed = discord.Embed(title=f'{results[index]}', url=url, description=description, color=0x36509D)
             embed.set_thumbnail(url=getImage(url))
-                
+
             if first_reaction:
                 send = await reaction.message.channel.send(embed=embed)
                 first_reaction = False
             else:
                 await send.edit(embed=embed)
-                
+
     return
 
 if __name__ == "__main__":

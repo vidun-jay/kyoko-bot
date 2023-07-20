@@ -1,0 +1,42 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository to the runner machine
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      # Transfer files to EC2 instance
+      - name: Transfer Files to EC2
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          RUNNER_HOST: ${{ secrets.RUNNER_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          echo "$RUNNER_HOST" >> ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_rsa
+          scp -r * ec2-user@${{ secrets.EC2_PUBLIC_IP }}:/home/ec2-user/Kyoko-Bot
+
+      # Close old bot
+      - name: Close old bot
+        run: |
+          ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} "screen -X -S kyoko quit"
+
+      # Install dependencies and build
+      - name: Install Dependencies and Build
+        run: |
+          pip install -r requirements.txt
+
+      # Run new code
+      - name: Run new code
+        run: |
+          ssh ec2-user@${{ secrets.EC2_PUBLIC_IP }} "screen -dmS kyoko python3 Kyoko-Bot/main.py"
